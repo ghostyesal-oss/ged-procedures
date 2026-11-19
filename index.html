@@ -231,7 +231,7 @@
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <a href="bragatest.html" style="color:#3d9cf5;text-decoration:none;font-size:13px;font-weight:800;padding:8px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)">BRAGATEST</a>
+        <button type="button" id="go-bragatest" style="color:#3d9cf5;font-size:13px;font-weight:800;padding:8px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);cursor:pointer">BRAGATEST</button>
         <span class="muted" id="status">Connexion…</span>
       </div>
     </header>
@@ -420,7 +420,7 @@
 
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-    import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE } from "./config.js";
+    import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE, goToBragatest } from "./config.js";
 
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -978,6 +978,8 @@
       closeView();
       openEdit(row);
     });
+
+    $("go-bragatest")?.addEventListener("click", () => goToBragatest());
 
     // Init
     setAppVisibility(categorieEl.value, applicationEl, appBlock);

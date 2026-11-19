@@ -1,5 +1,5 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
-import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE } from "./config.js";
+import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE, goToAdmin } from "./config.js";
 import { buildLocalSearchIntent, normalizeTokenExport } from "./lib/search-intent.js";
 
 const $ = (id) => document.getElementById(id);
@@ -135,7 +135,7 @@ function renderProcedure(row, source) {
         <div class="procedure-block__body">${row.solution || "<p><em>—</em></p>"}</div>
       </section>
       <p style="margin:8px 0 0;font-size:0.72rem;color:var(--muted)">
-        <a href="index.html" style="color:var(--accent)">Ouvrir dans GED</a> pour modifier
+        <button type="button" class="go-admin-inline" data-action="go-admin">Modifier en back-office</button>
       </p>
     </div>
   `;
@@ -201,6 +201,11 @@ async function analyze() {
 }
 
 function wireUi() {
+  $("go-admin")?.addEventListener("click", () => goToAdmin());
+  $("result")?.addEventListener("click", (e) => {
+    if (e.target.closest("[data-action='go-admin']")) goToAdmin();
+  });
+
   $("analyze")?.addEventListener("click", () => analyze());
   $("toggle-input")?.addEventListener("click", () => {
     $("input-panel")?.classList.toggle("compact");

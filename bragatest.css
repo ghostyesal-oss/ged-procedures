@@ -68,18 +68,30 @@ h1 {
   gap: 10px;
 }
 
-.header-nav a {
+.nav-btn {
   color: var(--accent);
-  text-decoration: none;
   font-size: 0.82rem;
   font-weight: 600;
   padding: 6px 10px;
   border: 1px solid var(--border);
   border-radius: 8px;
+  background: transparent;
 }
 
-.header-nav a:hover {
+.nav-btn:hover {
   background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+}
+
+button.go-admin-inline {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .conn-pill {
@@ -384,15 +396,4 @@ button:disabled {
   height: auto;
   border-radius: 8px;
   margin: 8px 0;
-}
-
-.ged-foot {
-  margin-top: 16px;
-  font-size: 0.75rem;
-  color: var(--muted);
-  text-align: center;
-}
-
-.ged-foot a {
-  color: var(--accent);
 }
