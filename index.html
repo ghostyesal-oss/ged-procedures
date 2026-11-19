@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GED — Applications → Procédures</title>
+  <link rel="stylesheet" href="assets/theme.css" />
   <style>
     :root{
       --bg:#0b1220; --card:#111a2e; --muted:#9aa6c2; --text:#eaf0ff;
@@ -220,20 +221,22 @@
     .hint{font-size:12px;color:var(--muted);margin-top:6px}
   </style>
 </head>
-<body>
+<body class="app-body">
   <div class="wrap">
-    <header>
-      <div class="title">
-        <div class="logo"></div>
+    <header class="app-topbar">
+      <div class="app-brand">
+        <div class="app-logo" aria-hidden="true"></div>
         <div>
-          <h1>GED — Applications → Procédures</h1>
-          <div class="sub">Exploitation : arborescence <b>Application → procédures</b>  </div>
+          <div class="app-kicker">Plateforme procédures</div>
+          <h1 class="app-title">GED — Applications → Procédures</h1>
+          <div class="sub">Exploitation : arborescence <b>Application → procédures</b></div>
         </div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <button type="button" id="go-bragatest" style="color:#3d9cf5;font-size:13px;font-weight:800;padding:8px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);cursor:pointer">BRAGATEST</button>
-        <span class="muted" id="status">Connexion…</span>
-      </div>
+      <nav class="app-nav" aria-label="Applications">
+        <button type="button" class="nav-pill is-active" disabled>GED</button>
+        <button type="button" class="nav-pill nav-pill--accent" id="go-bragatest">BRAGATEST</button>
+        <span class="status-pill" id="status">Connexion…</span>
+      </nav>
     </header>
 
     <div class="grid">
@@ -421,6 +424,7 @@
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
     import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE, goToBragatest } from "./config.js";
+    import { logEvent } from "./lib/telemetry.js";
 
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -814,16 +818,22 @@
     }
 
     async function load(){
+      const t0 = performance.now();
       $("status").textContent = "Chargement…";
+      $("status").classList.remove("is-ok", "is-err");
       const { data, error } = await sb.from(TABLE).select("*").order("updated_at",{ascending:false});
       if(error){
         console.error(error);
         $("status").textContent = "Erreur";
+        $("status").classList.add("is-err");
         showToast("Erreur: " + error.message);
+        logEvent({ eventType: "ged_load", source: "ged", success: false, durationMs: Math.round(performance.now() - t0), errorMessage: error.message });
         return;
       }
       allRows = data || [];
-      $("status").textContent = "Connecté ✅";
+      $("status").textContent = `Connecté · ${allRows.length} proc.`;
+      $("status").classList.add("is-ok");
+      logEvent({ eventType: "ged_load", source: "ged", success: true, durationMs: Math.round(performance.now() - t0), kbCount: allRows.length });
       renderAll();
     }
 
@@ -873,8 +883,9 @@
       });
       $("btnAdd").disabled = false; $("btnAdd").textContent = "Enregistrer";
 
-      if(error){ console.error(error); showToast("Erreur: " + error.message); return; }
+      if(error){ console.error(error); showToast("Erreur: " + error.message); logEvent({ eventType: "ged_insert", source: "ged", success: false, errorMessage: error.message }); return; }
       showToast("Ajouté ✅");
+      logEvent({ eventType: "ged_insert", source: "ged", success: true });
       $("btnClear").click();
       await load();
     });
@@ -947,8 +958,9 @@
       }).eq("id", editingId);
       $("btnSaveEdit").disabled = false; $("btnSaveEdit").textContent = "Enregistrer";
 
-      if(error){ console.error(error); showToast("Erreur: " + error.message); return; }
+      if(error){ console.error(error); showToast("Erreur: " + error.message); logEvent({ eventType: "ged_update", source: "ged", success: false, errorMessage: error.message }); return; }
       showToast("Modifié ✅");
+      logEvent({ eventType: "ged_update", source: "ged", success: true });
       closeEdit();
       await load();
     });
@@ -961,8 +973,9 @@
       const { error } = await sb.from(TABLE).delete().eq("id", editingId);
       $("btnDelete").disabled = false; $("btnDelete").textContent = "Supprimer";
 
-      if(error){ console.error(error); showToast("Erreur: " + error.message); return; }
+      if(error){ console.error(error); showToast("Erreur: " + error.message); logEvent({ eventType: "ged_delete", source: "ged", success: false, errorMessage: error.message }); return; }
       showToast("Supprimé ✅");
+      logEvent({ eventType: "ged_delete", source: "ged", success: true });
       closeEdit();
       await load();
     });
@@ -979,7 +992,9 @@
       openEdit(row);
     });
 
-    $("go-bragatest")?.addEventListener("click", () => goToBragatest());
+      $("go-bragatest")?.addEventListener("click", () => goToBragatest());
+
+    logEvent({ eventType: "page_view", source: "ged", metadata: { page: "ged" } });
 
     // Init
     setAppVisibility(categorieEl.value, applicationEl, appBlock);

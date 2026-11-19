@@ -3,18 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>BRAGATEST — recherche procédures GED</title>
+    <title>BRAGATEST — recherche procédures</title>
+    <link rel="stylesheet" href="assets/theme.css" />
     <link rel="stylesheet" href="bragatest.css" />
   </head>
-  <body>
-    <header>
-      <div>
-        <div class="brand-tag">Lié au projet GED</div>
-        <h1>BRAGATEST</h1>
+  <body class="app-body">
+    <header class="app-topbar">
+      <div class="app-brand">
+        <div class="app-logo" aria-hidden="true"></div>
+        <div>
+          <div class="app-kicker">Recherche intelligente</div>
+          <h1 class="app-title">BRAGATEST</h1>
+        </div>
       </div>
-      <nav class="header-nav" aria-label="Navigation">
-        <span class="conn-pill" id="conn-status">Connexion…</span>
-        <button type="button" id="go-admin" class="nav-btn" title="Administration">Administration</button>
+      <nav class="app-nav" aria-label="Navigation">
+        <button type="button" id="go-admin" class="nav-pill">GED</button>
+        <button type="button" class="nav-pill is-active" disabled>BRAGATEST</button>
+        <span class="status-pill" id="conn-status">Connexion…</span>
       </nav>
     </header>
 

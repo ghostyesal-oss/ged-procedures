@@ -1,85 +1,14 @@
-:root {
-  color-scheme: light dark;
-  --bg: #0f1419;
-  --panel: #1a2332;
-  --text: #e7ecf3;
-  --muted: #8b9cb3;
-  --accent: #3d9cf5;
-  --border: #2a3547;
-  --danger: #f87171;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #f4f7fb;
-    --panel: #ffffff;
-    --text: #0f172a;
-    --muted: #64748b;
-    --accent: #2563eb;
-    --border: #e2e8f0;
-  }
-}
-
 * {
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  padding: 12px 14px 24px;
-  max-width: 560px;
+body.app-body {
+  padding: 14px 16px 28px;
+  max-width: 640px;
   margin-left: auto;
   margin-right: auto;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-h1 {
-  margin: 0;
-  font-size: 1.15rem;
-  letter-spacing: 0.04em;
-  font-weight: 800;
-}
-
-.brand-tag {
-  font-size: 0.65rem;
-  color: var(--muted);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.header-nav {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.nav-btn {
-  color: var(--accent);
-  font-size: 0.82rem;
-  font-weight: 600;
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: transparent;
-}
-
-.nav-btn:hover {
-  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
 }
 
 button.go-admin-inline {
@@ -94,12 +23,9 @@ button.go-admin-inline {
   text-underline-offset: 2px;
 }
 
-.conn-pill {
-  font-size: 0.72rem;
-  color: var(--muted);
-  padding: 4px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
+:root {
+  --panel: #1a2332;
+  --border: #2a3547;
 }
 
 #input-panel {

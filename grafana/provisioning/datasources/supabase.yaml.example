@@ -1,0 +1,14 @@
+apiVersion: 1
+datasources:
+  - name: Supabase GED
+    type: postgres
+    uid: supabase-ged
+    url: db.bkjdvdngadytbzgdcuik.supabase.co:5432
+    user: postgres
+    secureJsonData:
+      password: YOUR_DATABASE_PASSWORD
+    jsonData:
+      database: postgres
+      sslmode: require
+      postgresVersion: 1500
+      timescaledb: false

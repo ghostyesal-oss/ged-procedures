@@ -1,0 +1,260 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Connectivité — fond vert = OK",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "supabase-ged" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            {
+              "options": {
+                "0": { "color": "red", "index": 0, "text": "HORS LIGNE" },
+                "1": { "color": "green", "index": 1, "text": "CONNECTÉ" }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 1 },
+      "id": 10,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT 1 AS ok",
+          "refId": "A"
+        }
+      ],
+      "title": "PostgreSQL Supabase",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "supabase-ged" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            {
+              "options": {
+                "0": { "color": "red", "index": 0, "text": "ABSENTE" },
+                "1": { "color": "green", "index": 1, "text": "PRÊTE" }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 1 },
+      "id": 11,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT CASE WHEN to_regclass('public.bragatest_events') IS NOT NULL THEN 1 ELSE 0 END AS ok",
+          "refId": "A"
+        }
+      ],
+      "title": "Table bragatest_events",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "supabase-ged" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            {
+              "options": {
+                "0": { "color": "red", "index": 0, "text": "AUCUN SIGNAL" },
+                "1": { "color": "green", "index": 1, "text": "ACTIF" }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 1 },
+      "id": 12,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT CASE WHEN count(*) > 0 THEN 1 ELSE 0 END AS ok FROM public.bragatest_events WHERE created_at > now() - interval '30 minutes'",
+          "refId": "A"
+        }
+      ],
+      "title": "Télémétrie web (30 min)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "supabase-ged" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            {
+              "options": {
+                "0": { "color": "red", "index": 0, "text": "ERREURS" },
+                "1": { "color": "green", "index": 1, "text": "OK" }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 1 },
+      "id": 13,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT CASE WHEN count(*) FILTER (WHERE NOT success) > 0 THEN 0 ELSE 1 END AS ok FROM public.bragatest_events WHERE created_at > now() - interval '1 hour'",
+          "refId": "A"
+        }
+      ],
+      "title": "Flux sans échec (1 h)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "supabase-ged" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 1,
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT day AS time, sum(events) AS events FROM grafana_bragatest_activity_daily WHERE $__timeFilter(day) GROUP BY day ORDER BY 1",
+          "refId": "A"
+        }
+      ],
+      "title": "Événements plateforme / jour",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "supabase-ged" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "id": 2,
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT hour AS time, searches AS \"Recherches\", avg_hits AS \"Correspondances moy.\", avg_duration_ms AS \"Durée ms\" FROM grafana_bragatest_search_hourly WHERE $__timeFilter(hour) ORDER BY 1",
+          "refId": "A"
+        }
+      ],
+      "title": "BRAGATEST — recherches",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "supabase-ged" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "id": 3,
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT hour AS time, inserts, updates, deletes, loads FROM grafana_bragatest_ged_ops_hourly WHERE $__timeFilter(hour) ORDER BY 1",
+          "refId": "A"
+        }
+      ],
+      "title": "GED — opérations (CRUD + chargements)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "supabase-ged" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+      "id": 4,
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT source, sum(error_count) AS erreurs FROM grafana_bragatest_activity_daily WHERE $__timeFilter(day) GROUP BY source",
+          "refId": "A"
+        }
+      ],
+      "title": "Erreurs par source",
+      "type": "piechart"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "supabase-ged" },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 22 },
+      "id": 5,
+      "options": { "showHeader": true },
+      "targets": [
+        {
+          "format": "table",
+          "rawSql": "SELECT created_at, event_type, source, success, duration_ms, kb_count, left(error_message, 120) AS error, metadata FROM bragatest_events ORDER BY created_at DESC LIMIT 50",
+          "refId": "A"
+        }
+      ],
+      "title": "Journal opérationnel (50 derniers événements)",
+      "type": "table"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["BRAGATEST", "GED", "supabase"],
+  "templating": { "list": [] },
+  "time": { "from": "now-7d", "to": "now" },
+  "title": "BRAGATEST / GED — Supervision",
+  "uid": "bragatest-supervision",
+  "version": 1
+}

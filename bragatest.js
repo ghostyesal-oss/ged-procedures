@@ -1,5 +1,6 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE, goToAdmin } from "./config.js";
+import { logEvent } from "./lib/telemetry.js";
 import { buildLocalSearchIntent, normalizeTokenExport } from "./lib/search-intent.js";
 
 const $ = (id) => document.getElementById(id);
@@ -149,19 +150,26 @@ function renderProcedure(row, source) {
 }
 
 async function loadGed() {
+  const t0 = performance.now();
   $("conn-status").textContent = "Connexion…";
+  $("conn-status").classList.remove("is-ok", "is-err");
   const { data, error } = await sb.from(TABLE).select("*").order("updated_at", { ascending: false });
   if (error) {
     $("conn-status").textContent = "Erreur";
-    setStatus("Erreur GED : " + error.message, true);
+    $("conn-status").classList.add("is-err");
+    setStatus("Erreur base : " + error.message, true);
+    logEvent({ eventType: "ged_load", source: "bragatest", success: false, durationMs: Math.round(performance.now() - t0), errorMessage: error.message });
     return;
   }
   allRows = data || [];
-  $("conn-status").textContent = `GED · ${allRows.length} proc.`;
-  setStatus(`${allRows.length} procédure(s) chargée(s) depuis ged_items.`);
+  $("conn-status").textContent = `${allRows.length} proc.`;
+  $("conn-status").classList.add("is-ok");
+  setStatus(`${allRows.length} procédure(s) prêtes pour la recherche.`);
+  logEvent({ eventType: "ged_load", source: "bragatest", success: true, durationMs: Math.round(performance.now() - t0), kbCount: allRows.length });
 }
 
 async function analyze() {
+  const t0 = performance.now();
   const title = ($("title")?.value || "").trim();
   const description = ($("description")?.value || "").trim();
   const extra = ($("extra")?.value || "").trim();
@@ -186,11 +194,21 @@ async function analyze() {
   $("result-loading")?.classList.add("hidden");
   $("result-panel")?.classList.remove("hidden");
 
+  const durationMs = Math.round(performance.now() - t0);
+
   if (!ranked.length) {
     selectedId = null;
     showKbList([]);
     renderProcedure(null);
-    setStatus("Aucune procédure correspondante — enrichissez la GED ou affinez la saisie.");
+    setStatus("Aucune procédure correspondante — enrichissez la base ou affinez la saisie.");
+    logEvent({
+      eventType: "braga_search_complete",
+      source: "bragatest",
+      success: true,
+      durationMs,
+      kbCount: 0,
+      metadata: { query: title || description.slice(0, 80) },
+    });
     return;
   }
 
@@ -198,6 +216,14 @@ async function analyze() {
   showKbList(ranked);
   renderProcedure(ranked[0].row, "database");
   setStatus(`${ranked.length} correspondance(s). Meilleure : « ${ranked[0].row.titre} ».`);
+  logEvent({
+    eventType: "braga_search_complete",
+    source: "bragatest",
+    success: true,
+    durationMs,
+    kbCount: ranked.length,
+    metadata: { best: ranked[0].row.titre },
+  });
 }
 
 function wireUi() {
@@ -240,4 +266,5 @@ function wireUi() {
 }
 
 wireUi();
+logEvent({ eventType: "page_view", source: "bragatest", metadata: { page: "bragatest" } });
 await loadGed();
