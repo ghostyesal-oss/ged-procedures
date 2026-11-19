@@ -18,13 +18,30 @@ Dans le **SQL Editor** du projet lié au GED, exécutez :
 
 ## 2. Grafana — source PostgreSQL
 
-1. **Connections → Data sources → PostgreSQL**
-2. **Host** : `db.<votre-ref>.supabase.co` (sans `:5432` dans le host)
-3. **Database** : `postgres` · **User** : `postgres` · **SSL** : require
-4. **Password** : mot de passe *Database* (Settings → Database dans Supabase)
-5. **UID** de la source : `supabase-ged` (recommandé pour import direct du JSON)
+Le dashboard utilise l’**UID** `supabase-ged`. Sans cette source, tous les panneaux affichent **No data** (comme snowAI utilise `supabase-snowai` sur un autre projet).
 
-Référence projet GED actuel : `bkjdvdngadytbzgdcuik` → host `db.bkjdvdngadytbzgdcuik.supabase.co`
+**Automatique (recommandé)** :
+
+```powershell
+cd c:\Users\LASRY\Projects\ged\grafana
+copy .env.example .env
+# Éditez .env : GRAFANA_ADMIN_PASSWORD + SUPABASE_DB_PASSWORD (mot de passe Database GED)
+.\setup-grafana-datasource.ps1
+```
+
+**Manuel** : **Connections → Data sources → PostgreSQL**
+
+| Champ | Valeur |
+|--------|--------|
+| Name | Supabase GED |
+| **UID** | **`supabase-ged`** (obligatoire) |
+| Host | `db.bkjdvdngadytbzgdcuik.supabase.co` |
+| Database | `postgres` |
+| User | `postgres` |
+| SSL | require |
+| Password | mot de passe *Database* (Supabase → Settings → Database) |
+
+**Lien dashboard** (Grafana local) : [http://localhost:3000/d/bragatest-supervision](http://localhost:3000/d/bragatest-supervision)
 
 ## 3. Importer le tableau de bord
 
