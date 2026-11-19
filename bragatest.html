@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BRAGATEST — recherche procédures GED</title>
+    <link rel="stylesheet" href="bragatest.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <div class="brand-tag">Lié au projet GED</div>
+        <h1>BRAGATEST</h1>
+      </div>
+      <nav class="header-nav" aria-label="Navigation">
+        <span class="conn-pill" id="conn-status">Connexion…</span>
+        <a href="index.html" title="Administration GED">GED</a>
+      </nav>
+    </header>
+
+    <section id="input-panel">
+      <div class="panel-head">
+        <h2>Incident / demande</h2>
+        <button type="button" id="toggle-input" class="link">Réduire</button>
+      </div>
+
+      <section class="field">
+        <label for="title">Résumé</label>
+        <input id="title" type="text" placeholder="Ex. VPN inaccessible, appli métier en erreur…" autocomplete="off" />
+      </section>
+
+      <section class="field">
+        <label for="description">Description</label>
+        <textarea id="description" rows="4" placeholder="Symptômes, impact, messages d’erreur…"></textarea>
+      </section>
+
+      <section class="field">
+        <label for="extra">Notes</label>
+        <textarea id="extra" rows="2" placeholder="Optionnel — application, environnement…"></textarea>
+      </section>
+
+      <div class="actions">
+        <button type="button" id="clear-fields" class="secondary">Vider</button>
+        <button type="button" id="analyze" class="primary">Comprendre &amp; chercher en base GED</button>
+      </div>
+    </section>
+
+    <p id="status" class="status" aria-live="polite"></p>
+
+    <section id="result-panel" class="result-panel hidden">
+      <p id="result-loading" class="result-loading hidden">Analyse en cours…</p>
+
+      <section id="search-intent" class="search-intent hidden" aria-live="polite"></section>
+
+      <section id="kb-wrap" class="kb-wrap hidden">
+        <p class="kb-title">Procédures trouvées (ged_items)</p>
+        <ul id="kb-list" class="kb-list"></ul>
+      </section>
+
+      <section id="result-wrap" class="result-wrap hidden">
+        <div class="result-toolbar">
+          <span id="source-badge" class="source-badge hidden"></span>
+          <div class="result-actions">
+            <button type="button" id="copy" class="link">Copier</button>
+          </div>
+        </div>
+        <article id="result" class="result"></article>
+      </section>
+    </section>
+
+    <p class="ged-foot">
+      Même base que <a href="index.html">GED — Applications → Procédures</a> · style inspiré de snowAI
+    </p>
+
+    <script type="module" src="bragatest.js"></script>
+  </body>
+</html>

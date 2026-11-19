@@ -230,7 +230,10 @@
           <div class="sub">Exploitation : arborescence <b>Application → procédures</b>  </div>
         </div>
       </div>
-      <div class="muted" id="status">Connexion…</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <a href="bragatest.html" style="color:#3d9cf5;text-decoration:none;font-size:13px;font-weight:800;padding:8px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05)">BRAGATEST</a>
+        <span class="muted" id="status">Connexion…</span>
+      </div>
     </header>
 
     <div class="grid">
@@ -417,12 +420,9 @@
 
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+    import { SUPABASE_URL, SUPABASE_ANON_KEY, TABLE } from "./config.js";
 
-    // === Supabase ===
-    const SUPABASE_URL = "https://bkjdvdngadytbzgdcuik.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_vICsnv_IS83BB8us5uUGyA_fY3bA_1d";
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const TABLE = "ged_items";
 
     // === Helpers ===
     const $ = (id) => document.getElementById(id);
