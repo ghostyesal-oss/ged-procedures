@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GED — Applications → Procédures</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:#111a2e; --muted:#9aa6c2; --text:#eaf0ff;
+      --line:rgba(255,255,255,.08); --btn:#2563eb; --danger:#ef4444; --ok:#22c55e;
+      --chip:#1a2642; --shadow: 0 16px 40px rgba(0,0,0,.35); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(37,99,235,.25), transparent 55%),
+                  radial-gradient(900px 600px at 90% 0%, rgba(34,197,94,.18), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1200px;margin:22px auto;padding:14px}
+    header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+    .title{display:flex;align-items:center;gap:10px;}
+    .logo{width:42px;height:42px;border-radius:14px;background: linear-gradient(135deg, rgba(37,99,235,.9), rgba(34,197,94,.7));box-shadow: var(--shadow);}
+    h1{font-size:20px;margin:0}
+    .sub{color:var(--muted);font-size:13px;margin-top:3px}
+
+    .grid{display:grid;grid-template-columns: 420px 1fr;gap:14px}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      background: rgba(17,26,46,.86);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px;
+      backdrop-filter: blur(10px);
+    }
+    .card h2{font-size:15px;margin:0 0 10px 0;color:#dbe6ff}
+
+    label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+    input, select, textarea{
+      width:100%;
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+    }
+    input:focus,select:focus,textarea:focus{border-color: rgba(37,99,235,.55); box-shadow: 0 0 0 4px rgba(37,99,235,.12)}
+    textarea{min-height:92px;resize:vertical}
+
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    button{
+      border:0;border-radius:14px;padding:10px 12px;font-weight:800;cursor:pointer;
+      color:white;background: var(--btn);
+    }
+    .btn-ghost{background: rgba(255,255,255,.08); color: var(--text); border:1px solid var(--line);}
+    .btn-danger{background: var(--danger)}
+    .btn-ok{background: var(--ok)}
+    .btn-small{padding:8px 10px;border-radius:12px;font-size:12px}
+
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      background: var(--chip);
+      border:1px solid var(--line);
+      color: var(--text);
+      padding:8px 10px;border-radius:999px;
+      font-size:12px;cursor:pointer;user-select:none;
+      display:flex;align-items:center;gap:7px;
+    }
+    .chip.active{border-color: rgba(37,99,235,.7); box-shadow: 0 0 0 4px rgba(37,99,235,.10)}
+    .dot{width:9px;height:9px;border-radius:50%}
+    .dot.exp{background:#3b82f6}
+    .dot.sup{background:#ef4444}
+
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      white-space:nowrap;
+    }
+    .badge-app{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color: #dbe6ff;
+      white-space:nowrap;
+    }
+
+    /* Rich editors */
+    .editor{
+      width:100%;
+      min-height:120px;
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+      line-height:1.45;
+    }
+    .editor:focus{border-color: rgba(37,99,235,.55); box-shadow: 0 0 0 4px rgba(37,99,235,.12)}
+    .editor img, .viewer-content img{
+      max-width:100%;
+      height:auto;
+      display:block;
+      margin:10px 0;
+      border-radius:14px;
+      border:1px solid var(--line);
+      cursor: zoom-in;
+    }
+    .toolbar-mini{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+
+    /* Tree layout */
+    .treeGrid{display:grid;grid-template-columns: 320px 1fr;gap:12px}
+    @media (max-width: 980px){ .treeGrid{grid-template-columns:1fr} }
+
+    .panel{
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      background: rgba(255,255,255,.03);
+    }
+    .panelHeader{
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .panelHeader .muted{color:var(--muted);font-size:12px}
+    .panelBody{max-height:64vh; overflow:auto}
+    .item{
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      cursor:pointer;
+      display:flex;justify-content:space-between;gap:10px;align-items:center;
+    }
+    .item:hover{background: rgba(255,255,255,.03)}
+    .item.active{background: rgba(37,99,235,.12); outline:1px solid rgba(37,99,235,.35)}
+    .itemTitle{font-weight:900}
+    .count{color:var(--muted);font-size:12px}
+
+    .procCard{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      background: rgba(255,255,255,.03);
+      margin-bottom:10px;
+      cursor:pointer;
+    }
+    .procCard:hover{background: rgba(255,255,255,.04)}
+    .procTitle{font-weight:950;margin:0 0 6px 0}
+    .procMeta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:12px}
+    .procSnippet{color:var(--muted);font-size:12px;margin-top:8px}
+
+    .empty{padding:14px;color:var(--muted);text-align:center}
+
+    /* Modals */
+    .modal-backdrop{
+      position:fixed;inset:0;background:rgba(0,0,0,.62);
+      display:none;align-items:center;justify-content:center;padding:14px;z-index:50;
+    }
+    .modal{
+      width:min(920px, 98vw);
+      border-radius: 20px;
+      border:1px solid var(--line);
+      background: rgba(17,26,46,.92);
+      box-shadow: var(--shadow);
+      padding:14px;
+      max-height: 92vh;
+      overflow:auto;
+    }
+    .modal header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+    .modal h3{margin:0;font-size:16px}
+
+    /* Viewer */
+    .viewer-title{font-size:20px;font-weight:950;margin:10px 0 6px}
+    .viewer-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:12px}
+    .viewer-section{margin-top:14px}
+    .viewer-section h4{margin:0 0 8px 0;font-size:13px;color:#dbe6ff}
+    .viewer-content{
+      background: rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      border-radius: 16px;
+      padding:12px;
+      color: var(--text);
+      line-height:1.45;
+      word-break:break-word;
+    }
+
+    /* Zoom */
+    .img-zoom-backdrop{
+      position:fixed;inset:0;background:rgba(0,0,0,.85);
+      display:none;align-items:center;justify-content:center;z-index:80;padding:18px;
+    }
+    .img-zoom-backdrop img{
+      max-width: 96vw;
+      max-height: 92vh;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.12);
+      cursor: zoom-out;
+    }
+
+    .toast{
+      position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+      background:rgba(17,26,46,.95);
+      border:1px solid var(--line);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      box-shadow: var(--shadow);
+      display:none;
+      z-index:90;font-weight:800;font-size:13px;
+    }
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <div class="logo"></div>
+        <div>
+          <h1>GED — Applications → Procédures</h1>
+          <div class="sub">Exploitation : arborescence <b>Application → procédures</b>  </div>
+        </div>
+      </div>
+      <div class="muted" id="status">Connexion…</div>
+    </header>
+
+    <div class="grid">
+      <!-- Add -->
+      <section class="card">
+        <h2>Ajouter une procédure</h2>
+
+        <label>Catégorie</label>
+        <select id="categorie">
+          <option value="Exploitation">Exploitation</option>
+          <option value="Supervision">Supervision</option>
+        </select>
+
+        <div id="appBlock">
+          <label>Application (Exploitation)</label>
+          <input id="application" placeholder="" />
+          <div class="hint">Obligatoire pour Exploitation • Vide pour Supervision</div>
+        </div>
+
+        <label>Titre</label>
+        <input id="titre" placeholder="" />
+
+        <label>Description (avec photos)</label>
+        <div id="descriptionEditor" class="editor" contenteditable="true"></div>
+        <div class="toolbar-mini">
+          <button class="btn-ghost btn-small" id="btnAddPhotoDesc" type="button">📷 Photo (Description)</button>
+          <button class="btn-ghost btn-small" id="btnClearDesc" type="button">🧹 Vider</button>
+        </div>
+        <input id="descPhotoInput" type="file" accept="image/*" hidden />
+
+        <label>Solution (avec photos)</label>
+        <div id="solutionEditor" class="editor" contenteditable="true"></div>
+        <div class="toolbar-mini">
+          <button class="btn-ghost btn-small" id="btnAddPhotoSol" type="button">📷 Photo (Solution)</button>
+          <button class="btn-ghost btn-small" id="btnClearSol" type="button">🧹 Vider</button>
+        </div>
+        <input id="solPhotoInput" type="file" accept="image/*" hidden />
+
+        <div class="actions">
+          <button id="btnAdd" class="btn-ok" type="button">Enregistrer</button>
+          <button id="btnClear" class="btn-ghost" type="button">Vider</button>
+        </div>
+
+        <div class="hint"> </div>
+      </section>
+
+      <!-- Tree -->
+      <section class="card">
+        <div class="toolbar">
+          <div class="chips">
+            <div class="chip active" data-mode="TREE"><span class="dot exp"></span> Applications (Exploitation)</div>
+            <div class="chip" data-mode="SUP"><span class="dot sup"></span> Supervision</div>
+          </div>
+          <input id="search" placeholder="Rechercher (titre / texte / app)..." style="max-width:360px" />
+        </div>
+
+        <!-- Exploitation tree -->
+        <div id="treeView">
+          <div class="treeGrid">
+            <div class="panel">
+              <div class="panelHeader">
+                <div>
+                  <div style="font-weight:950">Applications</div>
+                  <div class="muted" id="appsInfo">—</div>
+                </div>
+                <button class="btn-ghost btn-small" id="btnAllApps" type="button">Toutes</button>
+              </div>
+              <div class="panelBody" id="appsList">
+                <div class="empty">Chargement…</div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panelHeader">
+                <div>
+                  <div style="font-weight:950" id="procsTitle">Procédures</div>
+                  <div class="muted" id="procsInfo">—</div>
+                </div>
+              </div>
+              <div class="panelBody" id="procsList">
+                <div class="empty">Sélectionne une application</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supervision list -->
+        <div id="supView" style="display:none">
+          <div class="panel">
+            <div class="panelHeader">
+              <div>
+                <div style="font-weight:950">Procédures Supervision</div>
+                <div class="muted" id="supInfo">—</div>
+              </div>
+            </div>
+            <div class="panelBody" id="supList">
+              <div class="empty">Chargement…</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </div>
+
+  <!-- Edit modal -->
+  <div class="modal-backdrop" id="editBackdrop">
+    <div class="modal">
+      <header>
+        <h3>Modifier la procédure</h3>
+        <button class="btn-ghost btn-small" id="btnCloseEdit" type="button">Fermer</button>
+      </header>
+
+      <label>Catégorie</label>
+      <select id="editCategorie">
+        <option value="Exploitation">Exploitation</option>
+        <option value="Supervision">Supervision</option>
+      </select>
+
+      <div id="editAppBlock">
+        <label>Application (Exploitation)</label>
+        <input id="editApplication" />
+        <div class="hint">Obligatoire pour Exploitation • Vide pour Supervision</div>
+      </div>
+
+      <label>Titre</label>
+      <input id="editTitre" />
+
+      <label>Description (avec photos)</label>
+      <div id="editDescriptionEditor" class="editor" contenteditable="true"></div>
+      <div class="toolbar-mini">
+        <button class="btn-ghost btn-small" id="btnAddPhotoEditDesc" type="button">📷 Photo (Description)</button>
+        <button class="btn-ghost btn-small" id="btnClearEditDesc" type="button">🧹 Vider</button>
+      </div>
+      <input id="editDescPhotoInput" type="file" accept="image/*" hidden />
+
+      <label>Solution (avec photos)</label>
+      <div id="editSolutionEditor" class="editor" contenteditable="true"></div>
+      <div class="toolbar-mini">
+        <button class="btn-ghost btn-small" id="btnAddPhotoEditSol" type="button">📷 Photo (Solution)</button>
+        <button class="btn-ghost btn-small" id="btnClearEditSol" type="button">🧹 Vider</button>
+      </div>
+      <input id="editSolPhotoInput" type="file" accept="image/*" hidden />
+
+      <div class="actions">
+        <button id="btnSaveEdit" class="btn-ok" type="button">Enregistrer</button>
+        <button id="btnDelete" class="btn-danger" type="button">Supprimer</button>
+      </div>
+      <div class="hint" id="editMeta"></div>
+    </div>
+  </div>
+
+  <!-- Viewer modal -->
+  <div class="modal-backdrop" id="viewBackdrop">
+    <div class="modal">
+      <header>
+        <h3>Procédure (plein écran)</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-ghost btn-small" id="btnOpenEditFromView" type="button">✏️ Modifier</button>
+          <button class="btn-ghost btn-small" id="btnCloseView" type="button">Fermer</button>
+        </div>
+      </header>
+
+      <div id="viewHeader"></div>
+
+      <div class="viewer-section">
+        <h4>Description</h4>
+        <div class="viewer-content" id="viewDescription"></div>
+      </div>
+
+      <div class="viewer-section">
+        <h4>Solution</h4>
+        <div class="viewer-content" id="viewSolution"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zoom -->
+  <div class="img-zoom-backdrop" id="zoomBackdrop" title="Cliquer pour fermer">
+    <img id="zoomImg" alt="Zoom" />
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    // === Supabase ===
+    const SUPABASE_URL = "https://bkjdvdngadytbzgdcuik.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_vICsnv_IS83BB8us5uUGyA_fY3bA_1d";
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const TABLE = "ged_items";
+
+    // === Helpers ===
+    const $ = (id) => document.getElementById(id);
+
+    function showToast(msg){
+      $("toast").textContent = msg;
+      $("toast").style.display = "block";
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(()=> $("toast").style.display="none", 2200);
+    }
+
+    function escapeHtml(s=""){
+      return s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+              .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+
+    function stripHtml(html=""){
+      const d = document.createElement("div");
+      d.innerHTML = html;
+      return (d.textContent || d.innerText || "").trim();
+    }
+
+    function isEmptyEditor(html){
+      const text = stripHtml(html);
+      const hasImg = (html || "").includes("<img");
+      return (text.length === 0 && !hasImg);
+    }
+
+    function badgeCat(cat){
+      return (cat === "Exploitation")
+        ? `<span class="badge"><span class="dot exp"></span>Exploitation</span>`
+        : `<span class="badge"><span class="dot sup"></span>Supervision</span>`;
+    }
+
+    function pillApp(app){
+      return `<span class="badge-app">🧩 ${escapeHtml(app || "")}</span>`;
+    }
+
+    function bindZoomOnImages(container){
+      [...container.querySelectorAll("img")].forEach(img=>{
+        img.addEventListener("click", (e)=>{
+          e.stopPropagation();
+          $("zoomImg").src = img.src;
+          $("zoomBackdrop").style.display = "flex";
+        });
+      });
+    }
+    $("zoomBackdrop").addEventListener("click", ()=>{
+      $("zoomBackdrop").style.display = "none";
+      $("zoomImg").src = "";
+    });
+
+    async function insertImageFromFile(editorEl, file){
+      if(!file) return;
+      if(file.size > 2.5 * 1024 * 1024){
+        showToast("Image trop grande (max ~2.5MB). Compresse-la puis réessaie.");
+        return;
+      }
+      const dataUrl = await new Promise((resolve, reject)=>{
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+      const img = document.createElement("img");
+      img.src = dataUrl;
+      img.alt = file.name || "photo";
+      editorEl.appendChild(img);
+      editorEl.focus();
+      showToast("Photo ajoutée ✅");
+    }
+
+    // === State ===
+    let allRows = [];
+    let mode = "TREE";           // TREE | SUP
+    let activeApp = "ALL";       // app selected in tree
+    let activeRowId = null;      // for view/edit
+    let editingId = null;
+
+    // === UI Refs ===
+    const chips = [...document.querySelectorAll(".chip")];
+
+    // Add form refs
+    const categorieEl = $("categorie");
+    const appBlock = $("appBlock");
+    const applicationEl = $("application");
+    const titreEl = $("titre");
+    const descEd = $("descriptionEditor");
+    const solEd = $("solutionEditor");
+
+    // Add photos
+    const descPhotoInput = $("descPhotoInput");
+    const solPhotoInput = $("solPhotoInput");
+
+    // Edit modal refs
+    const editBackdrop = $("editBackdrop");
+    const editCategorie = $("editCategorie");
+    const editAppBlock = $("editAppBlock");
+    const editApplication = $("editApplication");
+    const editTitre = $("editTitre");
+    const editDescEd = $("editDescriptionEditor");
+    const editSolEd = $("editSolutionEditor");
+    const editDescPhotoInput = $("editDescPhotoInput");
+    const editSolPhotoInput = $("editSolPhotoInput");
+
+    // Viewer
+    const viewBackdrop = $("viewBackdrop");
+    const viewHeader = $("viewHeader");
+    const viewDescription = $("viewDescription");
+    const viewSolution = $("viewSolution");
+
+    // Tree panels
+    const treeView = $("treeView");
+    const supView = $("supView");
+    const appsList = $("appsList");
+    const procsList = $("procsList");
+    const supList = $("supList");
+
+    // Search
+    const searchEl = $("search");
+
+    function setAppVisibility(cat, inputEl, blockEl){
+      if(cat === "Exploitation"){
+        blockEl.style.display = "block";
+      }else{
+        blockEl.style.display = "none";
+        inputEl.value = "";
+      }
+    }
+
+    // === Rendering ===
+    function getFilteredRows(){
+      const q = (searchEl.value || "").trim().toLowerCase();
+
+      // Mode TREE shows exploitation, optionally by app
+      if(mode === "TREE"){
+        let rows = allRows.filter(r => r.categorie === "Exploitation");
+        if(activeApp !== "ALL") rows = rows.filter(r => (r.application || "").trim() === activeApp);
+
+        if(q){
+          rows = rows.filter(r =>
+            (r.titre||"").toLowerCase().includes(q) ||
+            (r.application||"").toLowerCase().includes(q) ||
+            stripHtml(r.description||"").toLowerCase().includes(q) ||
+            stripHtml(r.solution||"").toLowerCase().includes(q)
+          );
+        }
+        return rows;
+      }
+
+      // Mode SUP shows supervision
+      let rows = allRows.filter(r => r.categorie === "Supervision");
+      if(q){
+        rows = rows.filter(r =>
+          (r.titre||"").toLowerCase().includes(q) ||
+          stripHtml(r.description||"").toLowerCase().includes(q) ||
+          stripHtml(r.solution||"").toLowerCase().includes(q)
+        );
+      }
+      return rows;
+    }
+
+    function renderApps(){
+      const exp = allRows.filter(r => r.categorie === "Exploitation" && r.application && r.application.trim());
+      const counts = new Map();
+      exp.forEach(r=>{
+        const a = r.application.trim();
+        counts.set(a, (counts.get(a)||0) + 1);
+      });
+
+      const apps = Array.from(counts.keys()).sort((a,b)=>a.localeCompare(b));
+      $("appsInfo").textContent = `${apps.length} application(s)`;
+
+      if(apps.length === 0){
+        appsList.innerHTML = `<div class="empty">Aucune application. Ajoute une procédure Exploitation avec une application.</div>`;
+        procsList.innerHTML = `<div class="empty">—</div>`;
+        return;
+      }
+
+      appsList.innerHTML = [
+        `<div class="item ${activeApp==="ALL" ? "active" : ""}" data-app="ALL">
+          <div>
+            <div class="itemTitle">Toutes</div>
+            <div class="count">Exploitation</div>
+          </div>
+          <div class="count">${exp.length}</div>
+        </div>`,
+        ...apps.map(app => `
+          <div class="item ${activeApp===app ? "active" : ""}" data-app="${escapeHtml(app)}">
+            <div>
+              <div class="itemTitle">${escapeHtml(app)}</div>
+              <div class="count">Exploitation</div>
+            </div>
+            <div class="count">${counts.get(app)}</div>
+          </div>
+        `)
+      ].join("");
+
+      [...appsList.querySelectorAll("[data-app]")].forEach(el=>{
+        el.addEventListener("click", ()=>{
+          activeApp = el.getAttribute("data-app");
+          // restore real string (not escaped) by matching list
+          if(activeApp !== "ALL"){
+            // find exact app from apps by comparing escaped text? easiest: use dataset raw by building with escapeHtml.
+            // We'll remap by innerText.
+            const label = el.querySelector(".itemTitle")?.innerText || "";
+            activeApp = label === "Toutes" ? "ALL" : label;
+          }
+          renderApps();
+          renderProcs();
+        });
+      });
+    }
+
+    function renderProcs(){
+      const rows = getFilteredRows();
+      const title = (activeApp === "ALL") ? "Procédures (Toutes applications)" : `Procédures (${activeApp})`;
+      $("procsTitle").textContent = title;
+      $("procsInfo").textContent = `${rows.length} procédure(s)`;
+
+      if(rows.length === 0){
+        procsList.innerHTML = `<div class="empty">Aucune procédure trouvée</div>`;
+        return;
+      }
+
+      procsList.innerHTML = rows.map(r => {
+        const snippet = escapeHtml(stripHtml(r.description||"").slice(0, 140)) + (stripHtml(r.description||"").length>140 ? "…" : "");
+        return `
+          <div class="procCard" data-view="${r.id}">
+            <div class="procMeta">
+              ${badgeCat(r.categorie)} ${pillApp(r.application || "")}
+              <span>•</span><span>${new Date(r.updated_at).toLocaleString()}</span>
+            </div>
+            <div class="procTitle">${escapeHtml(r.titre||"")}</div>
+            <div class="procSnippet">${snippet}</div>
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn-ghost btn-small" data-edit="${r.id}" type="button">Modifier</button>
+              <button class="btn-ghost btn-small" data-open="${r.id}" type="button">Ouvrir</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      // bind
+      [...procsList.querySelectorAll("[data-view]")].forEach(card=>{
+        card.addEventListener("click", (e)=>{
+          if(e.target && e.target.closest("button")) return;
+          const id = Number(card.getAttribute("data-view"));
+          const row = allRows.find(x => x.id === id);
+          if(row) openView(row);
+        });
+      });
+      [...procsList.querySelectorAll("[data-open]")].forEach(btn=>{
+        btn.addEventListener("click", (e)=>{
+          e.stopPropagation();
+          const id = Number(btn.getAttribute("data-open"));
+          const row = allRows.find(x => x.id === id);
+          if(row) openView(row);
+        });
+      });
+      [...procsList.querySelectorAll("[data-edit]")].forEach(btn=>{
+        btn.addEventListener("click", (e)=>{
+          e.stopPropagation();
+          const id = Number(btn.getAttribute("data-edit"));
+          const row = allRows.find(x => x.id === id);
+          if(row) openEdit(row);
+        });
+      });
+    }
+
+    function renderSupervision(){
+      const rows = getFilteredRows();
+      $("supInfo").textContent = `${rows.length} procédure(s)`;
+
+      if(rows.length === 0){
+        supList.innerHTML = `<div class="empty">Aucune procédure Supervision trouvée</div>`;
+        return;
+      }
+
+      supList.innerHTML = rows.map(r => {
+        const snippet = escapeHtml(stripHtml(r.description||"").slice(0, 150)) + (stripHtml(r.description||"").length>150 ? "…" : "");
+        return `
+          <div class="procCard" data-view="${r.id}">
+            <div class="procMeta">
+              ${badgeCat(r.categorie)}
+              <span>•</span><span>${new Date(r.updated_at).toLocaleString()}</span>
+            </div>
+            <div class="procTitle">${escapeHtml(r.titre||"")}</div>
+            <div class="procSnippet">${snippet}</div>
+            <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn-ghost btn-small" data-edit="${r.id}" type="button">Modifier</button>
+              <button class="btn-ghost btn-small" data-open="${r.id}" type="button">Ouvrir</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      [...supList.querySelectorAll("[data-view]")].forEach(card=>{
+        card.addEventListener("click", (e)=>{
+          if(e.target && e.target.closest("button")) return;
+          const id = Number(card.getAttribute("data-view"));
+          const row = allRows.find(x => x.id === id);
+          if(row) openView(row);
+        });
+      });
+      [...supList.querySelectorAll("[data-open]")].forEach(btn=>{
+        btn.addEventListener("click", (e)=>{
+          e.stopPropagation();
+          const id = Number(btn.getAttribute("data-open"));
+          const row = allRows.find(x => x.id === id);
+          if(row) openView(row);
+        });
+      });
+      [...supList.querySelectorAll("[data-edit]")].forEach(btn=>{
+        btn.addEventListener("click", (e)=>{
+          e.stopPropagation();
+          const id = Number(btn.getAttribute("data-edit"));
+          const row = allRows.find(x => x.id === id);
+          if(row) openEdit(row);
+        });
+      });
+    }
+
+    function renderAll(){
+      if(mode === "TREE"){
+        treeView.style.display = "block";
+        supView.style.display = "none";
+        renderApps();
+        renderProcs();
+      }else{
+        treeView.style.display = "none";
+        supView.style.display = "block";
+        renderSupervision();
+      }
+    }
+
+    // === Modals ===
+    function openView(row){
+      activeRowId = row.id;
+
+      const appLine = (row.categorie === "Exploitation")
+        ? ` ${pillApp(row.application || "")}`
+        : "";
+
+      viewHeader.innerHTML = `
+        <div class="viewer-meta">
+          ${badgeCat(row.categorie)}${appLine}
+          <span>•</span><span>Créé: ${new Date(row.created_at).toLocaleString()}</span>
+          <span>•</span><span>Modifié: ${new Date(row.updated_at).toLocaleString()}</span>
+        </div>
+        <div class="viewer-title">${escapeHtml(row.titre || "")}</div>
+      `;
+
+      viewDescription.innerHTML = row.description || "";
+      viewSolution.innerHTML = row.solution || "";
+
+      viewBackdrop.style.display = "flex";
+      bindZoomOnImages(viewDescription);
+      bindZoomOnImages(viewSolution);
+    }
+    function closeView(){ viewBackdrop.style.display = "none"; }
+
+    function openEdit(row){
+      editingId = row.id;
+      editCategorie.value = row.categorie;
+      editApplication.value = row.application || "";
+      setAppVisibility(editCategorie.value, editApplication, editAppBlock);
+
+      editTitre.value = row.titre || "";
+      editDescEd.innerHTML = row.description || "";
+      editSolEd.innerHTML = row.solution || "";
+      $("editMeta").textContent = `ID: ${row.id}`;
+
+      editBackdrop.style.display = "flex";
+      bindZoomOnImages(editDescEd);
+      bindZoomOnImages(editSolEd);
+    }
+    function closeEdit(){ editBackdrop.style.display = "none"; editingId = null; }
+
+    // === CRUD ===
+    function validateInputs(cat, app, t, descHtml, solHtml){
+      if(cat !== "Exploitation" && cat !== "Supervision") return "Catégorie invalide.";
+      if(cat === "Exploitation" && (!app || !app.trim())) return "Application obligatoire pour Exploitation.";
+      if(cat === "Supervision" && app && app.trim()) return "Supervision : Application doit être vide.";
+      if(!t.trim()) return "Le titre est obligatoire.";
+      if(isEmptyEditor(descHtml)) return "La description est obligatoire (texte ou image).";
+      if(isEmptyEditor(solHtml)) return "La solution est obligatoire (texte ou image).";
+      return null;
+    }
+
+    async function load(){
+      $("status").textContent = "Chargement…";
+      const { data, error } = await sb.from(TABLE).select("*").order("updated_at",{ascending:false});
+      if(error){
+        console.error(error);
+        $("status").textContent = "Erreur";
+        showToast("Erreur: " + error.message);
+        return;
+      }
+      allRows = data || [];
+      $("status").textContent = "Connecté ✅";
+      renderAll();
+    }
+
+    // === Wire: modes ===
+    chips.forEach(ch=>{
+      ch.addEventListener("click", ()=>{
+        chips.forEach(x=>x.classList.remove("active"));
+        ch.classList.add("active");
+        mode = ch.getAttribute("data-mode");
+        activeApp = "ALL";
+        renderAll();
+      });
+    });
+
+    // === Wire: search ===
+    searchEl.addEventListener("input", renderAll);
+
+    // === Add form behavior ===
+    categorieEl.addEventListener("change", ()=> setAppVisibility(categorieEl.value, applicationEl, appBlock));
+    $("btnClear").addEventListener("click", ()=>{
+      categorieEl.value = "Exploitation";
+      applicationEl.value = "";
+      setAppVisibility("Exploitation", applicationEl, appBlock);
+      titreEl.value = "";
+      descEd.innerHTML = "";
+      solEd.innerHTML = "";
+      titreEl.focus();
+    });
+
+    $("btnAdd").addEventListener("click", async ()=>{
+      const cat = categorieEl.value;
+      const app = (applicationEl.value || "").trim();
+      const t = titreEl.value;
+      const descHtml = descEd.innerHTML;
+      const solHtml = solEd.innerHTML;
+
+      const err = validateInputs(cat, app, t, descHtml, solHtml);
+      if(err){ showToast(err); return; }
+
+      $("btnAdd").disabled = true; $("btnAdd").textContent = "Enregistrement…";
+      const { error } = await sb.from(TABLE).insert({
+        categorie: cat,
+        application: (cat === "Exploitation") ? app : null,
+        titre: t.trim(),
+        description: descHtml,
+        solution: solHtml
+      });
+      $("btnAdd").disabled = false; $("btnAdd").textContent = "Enregistrer";
+
+      if(error){ console.error(error); showToast("Erreur: " + error.message); return; }
+      showToast("Ajouté ✅");
+      $("btnClear").click();
+      await load();
+    });
+
+    // === Add photos ===
+    $("btnAddPhotoDesc").addEventListener("click", ()=> descPhotoInput.click());
+    descPhotoInput.addEventListener("change", async ()=>{
+      await insertImageFromFile(descEd, descPhotoInput.files?.[0]);
+      descPhotoInput.value = "";
+      bindZoomOnImages(descEd);
+    });
+    $("btnClearDesc").addEventListener("click", ()=>{ descEd.innerHTML=""; showToast("Description vidée"); });
+
+    $("btnAddPhotoSol").addEventListener("click", ()=> solPhotoInput.click());
+    solPhotoInput.addEventListener("change", async ()=>{
+      await insertImageFromFile(solEd, solPhotoInput.files?.[0]);
+      solPhotoInput.value = "";
+      bindZoomOnImages(solEd);
+    });
+    $("btnClearSol").addEventListener("click", ()=>{ solEd.innerHTML=""; showToast("Solution vidée"); });
+
+    // === App list "Toutes" button ===
+    $("btnAllApps").addEventListener("click", ()=>{
+      activeApp = "ALL";
+      renderApps();
+      renderProcs();
+    });
+
+    // === Edit modal wire ===
+    $("btnCloseEdit").addEventListener("click", closeEdit);
+    editBackdrop.addEventListener("click", (e)=>{ if(e.target === editBackdrop) closeEdit(); });
+
+    editCategorie.addEventListener("change", ()=> setAppVisibility(editCategorie.value, editApplication, editAppBlock));
+
+    $("btnAddPhotoEditDesc").addEventListener("click", ()=> editDescPhotoInput.click());
+    editDescPhotoInput.addEventListener("change", async ()=>{
+      await insertImageFromFile(editDescEd, editDescPhotoInput.files?.[0]);
+      editDescPhotoInput.value = "";
+      bindZoomOnImages(editDescEd);
+    });
+    $("btnClearEditDesc").addEventListener("click", ()=>{ editDescEd.innerHTML=""; showToast("Description vidée"); });
+
+    $("btnAddPhotoEditSol").addEventListener("click", ()=> editSolPhotoInput.click());
+    editSolPhotoInput.addEventListener("change", async ()=>{
+      await insertImageFromFile(editSolEd, editSolPhotoInput.files?.[0]);
+      editSolPhotoInput.value = "";
+      bindZoomOnImages(editSolEd);
+    });
+    $("btnClearEditSol").addEventListener("click", ()=>{ editSolEd.innerHTML=""; showToast("Solution vidée"); });
+
+    $("btnSaveEdit").addEventListener("click", async ()=>{
+      if(!editingId) return;
+
+      const cat = editCategorie.value;
+      const app = (editApplication.value || "").trim();
+      const t = editTitre.value;
+      const descHtml = editDescEd.innerHTML;
+      const solHtml = editSolEd.innerHTML;
+
+      const err = validateInputs(cat, app, t, descHtml, solHtml);
+      if(err){ showToast(err); return; }
+
+      $("btnSaveEdit").disabled = true; $("btnSaveEdit").textContent = "Sauvegarde…";
+      const { error } = await sb.from(TABLE).update({
+        categorie: cat,
+        application: (cat === "Exploitation") ? app : null,
+        titre: t.trim(),
+        description: descHtml,
+        solution: solHtml
+      }).eq("id", editingId);
+      $("btnSaveEdit").disabled = false; $("btnSaveEdit").textContent = "Enregistrer";
+
+      if(error){ console.error(error); showToast("Erreur: " + error.message); return; }
+      showToast("Modifié ✅");
+      closeEdit();
+      await load();
+    });
+
+    $("btnDelete").addEventListener("click", async ()=>{
+      if(!editingId) return;
+      if(!confirm("Supprimer définitivement cette procédure ?")) return;
+
+      $("btnDelete").disabled = true; $("btnDelete").textContent = "Suppression…";
+      const { error } = await sb.from(TABLE).delete().eq("id", editingId);
+      $("btnDelete").disabled = false; $("btnDelete").textContent = "Supprimer";
+
+      if(error){ console.error(error); showToast("Erreur: " + error.message); return; }
+      showToast("Supprimé ✅");
+      closeEdit();
+      await load();
+    });
+
+    // === Viewer modal wire ===
+    $("btnCloseView").addEventListener("click", closeView);
+    viewBackdrop.addEventListener("click", (e)=>{ if(e.target === viewBackdrop) closeView(); });
+
+    $("btnOpenEditFromView").addEventListener("click", ()=>{
+      if(!activeRowId) return;
+      const row = allRows.find(x => x.id === activeRowId);
+      if(!row) return;
+      closeView();
+      openEdit(row);
+    });
+
+    // Init
+    setAppVisibility(categorieEl.value, applicationEl, appBlock);
+    await load();
+  </script>
+</body>
+</html>
