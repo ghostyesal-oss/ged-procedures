@@ -43,6 +43,19 @@ copy .env.example .env
 
 **Lien dashboard** (Grafana local) : [http://localhost:3000/d/bragatest-supervision](http://localhost:3000/d/bragatest-supervision)
 
+### Erreur « tenant/user postgres.… not found » (pooler)
+
+Vous avez mélangé **pooler** et **utilisateur direct**. Corrigez :
+
+| Mode | Host | User | Port |
+|------|------|------|------|
+| **Direct (recommandé)** | `db.bkjdvdngadytbzgdcuik.supabase.co` | `postgres` | 5432 |
+| Pooler (Session) | *copier depuis Supabase* | `postgres.bkjdvdngadytbzgdcuik` | souvent 5432 ou 6543 |
+
+Ne devinez pas `aws-0-eu-central-1.pooler…` : l’hôte exact est dans **Database → Connection string → Session pooler**.
+
+Puis relancez `.\setup-grafana-datasource.ps1` ou **Save & test** dans Grafana.
+
 ## 3. Importer le tableau de bord
 
 **Dashboards → Import** → `grafana/dashboards/bragatest-supervision.json`

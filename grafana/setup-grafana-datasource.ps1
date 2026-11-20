@@ -36,6 +36,16 @@ if (-not $dbPass) {
 
 $dbHost = if ($cfg.SUPABASE_DB_HOST) { $cfg.SUPABASE_DB_HOST } else { "db.bkjdvdngadytbzgdcuik.supabase.co" }
 $port = if ($cfg.SUPABASE_DB_PORT) { [int]$cfg.SUPABASE_DB_PORT } else { 5432 }
+$dbUser = if ($cfg.SUPABASE_DB_USER) { $cfg.SUPABASE_DB_USER } else { "postgres" }
+$dbName = if ($cfg.SUPABASE_DB_NAME) { $cfg.SUPABASE_DB_NAME } else { "postgres" }
+
+if ($dbHost -match "pooler\.supabase\.com" -and $dbUser -eq "postgres") {
+  Write-Warning "Host pooler détecté : utilisez SUPABASE_DB_USER=postgres.bkjdvdngadytbzgdcuik (copié depuis Supabase)."
+}
+if ($dbHost -match "^db\." -and $dbUser -match "\.") {
+  Write-Warning "Connexion directe : SUPABASE_DB_USER doit être postgres (sans .bkjdvdng…)."
+  $dbUser = "postgres"
+}
 $grafanaPort = if ($cfg.GRAFANA_PORT) { $cfg.GRAFANA_PORT } else { "3000" }
 
 $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("${gUser}:${gPass}"))
@@ -48,8 +58,8 @@ $payload = @{
   type             = "grafana-postgresql-datasource"
   access           = "proxy"
   url              = $dbHost
-  user             = "postgres"
-  database         = "postgres"
+  user             = $dbUser
+  database         = $dbName
   jsonData         = @{ sslmode = "require"; postgresVersion = 1500; port = $port }
   secureJsonData   = @{ password = $dbPass }
 }
